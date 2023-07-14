@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <button id="btn">hash路由</button>
+    <div id="content">home</div>
+    <script>
+        // hash router
+        class Router {
+            constructor () {
+                this.routes = {};
+                this.currentUrl = '';
+                // 监听哈希路由并刷新
+                window.addEventListener('load', this.refresh, false);
+                window.addEventListener('hashchange', this.refresh, false);
+            }
+            // 添加路由表
+            reoute(path,callback) {
+                this.routes[path] = callback
+            }
+            // 推送哈希
+            push(path) {
+                this.currentUrl = path
+                location.hash = this.currentUrl
+
+            }
+            // 刷新
+            refresh = () => {
+                // 获取当前哈希路由
+                this.currentUrl = location.hash.substring(1)
+                // 存在路由则使用路由跳转
+                if (this.routes[this.currentUrl]) {
+                        this.routes[this.currentUrl]()
+                    }
+                }
+        }
+        window.hashRouter = new Router();
+        // 添加路由规则
+        hashRouter.reoute('/page1',()=>document.getElementById('content').innerHTML = 'This is page1.')
+        hashRouter.reoute('/page2',()=>document.getElementById('content').innerHTML = 'This is page2.')
+        const btn = document.getElementById('btn').addEventListener('click',() => hashRouter.push(`${hashRouter.currentUrl==='/page2'?'/page1':'/page2'}`))
+    </script>
+</body>
+</html>
