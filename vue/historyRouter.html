@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <button id="btn">history路由</button>
+    <div id="content">home</div>
+    <script>
+        // history router
+        class Router {
+            constructor () {
+                this.routes = {};
+                this.currentUrl = '';
+                // 监听路由
+                this.listerPropState();
+            }
+            // 初始化路由
+            init(path) {
+                history.replaceState({path}, null, path);
+                this.currentUrl = path
+                this.routes[path] && this.routes[path]();
+            }
+            // 添加路由表
+            route(path,callback) {
+                this.routes[path] = callback;
+            }
+            
+            push(path) {  
+                //调用pushstate
+                history.pushState({path}, null, path);  
+                this.currentUrl = path
+                this.routes[path] && this.routes[path]();  
+            }   
+            // 监听popstate
+            listerPropState () {
+                window.addEventListener('popstate' , e => {  
+                    const path = this.currentUrl = e.state && e.state.path;  
+                    this.routes[path] && this.routes[path]()
+                }) 
+            }
+        }
+        window.historyRouter = new Router();
+        historyRouter.route('/', () => document.getElementById('content').innerHTML = 'This is home.');
+        historyRouter.route('/page1',()=>document.getElementById('content').innerHTML = 'This is page1.')
+        historyRouter.route('/page2',()=>document.getElementById('content').innerHTML = 'This is page2.')
+        historyRouter.init('/');
+        const btn1 = document.getElementById('btn').addEventListener('click',()=>historyRouter.push(`${historyRouter.currentUrl==='/page2'?'/page1':'/page2'}`))
+    </script>
+</body>
+</html>
